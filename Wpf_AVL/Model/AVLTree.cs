@@ -482,8 +482,8 @@ namespace Wpf_AVL.Model
         {
             if (x == null)
             {
-                Node<T> node = new Node<T>(key.Data, key.X, key.Y);
-                return node;
+                //Node<T> node = new Node<T>(key.Data, key.X, key.Y);
+                return key;
             }
 
             int cmp = key.CompareTo(x);
@@ -501,8 +501,8 @@ namespace Wpf_AVL.Model
         {
             if (x == null)
             {
-                Node<T> node = new Node<T>(key.Data, key.X, key.Y);
-                return node;
+                //Node<T> node = new Node<T>(key.Data, key.X, key.Y);
+                return key;
             }
 
             int cmp = key.CompareTo(x);
