@@ -410,6 +410,7 @@ namespace Wpf_AVL.Model
         {
             return FindParent(new Node<T>(data));
         }
+
         /// <summary>
         /// Searches for an parent of element that matches the conditions defined by the specified
         /// </summary>
@@ -531,8 +532,6 @@ namespace Wpf_AVL.Model
             if (x.Left == null)
                 return x.Right;
             x.Left = RemoveMin(x.Left);
-            //x.size = size(x.left) + size(x.right) + 1;
-            x.HeightNode = 1 + Math.Max(Height(x.Left), Height(x.Right));
             return x;
         }
 
@@ -602,7 +601,6 @@ namespace Wpf_AVL.Model
                 x.Left = t.Left;
             }
             x = Balance(x);
-            //x.size = size(x.left) + size(x.right) + 1;
             return x;
         }
 

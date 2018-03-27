@@ -83,7 +83,21 @@ namespace Wpf_AVL.ViewModel
             }
         }
         public ICommand BtnFindNodeClickCommand { get => btnFindNodeClickCommand; set => btnFindNodeClickCommand = value; }
-        public ICommand BtnDeleteNodeClickCommand { get => btnDeleteNodeClickCommand; set => btnDeleteNodeClickCommand = value; }
+        public ICommand BtnDeleteNodeClickCommand
+        {
+            get
+            {
+                return btnDeleteNodeClickCommand = new RelayCommand<Grid>((p) =>
+                {
+                    if ((NumBeDelete == null) || (p as Grid).Children.OfType<Button>().Where(pa => pa.Name.Equals($"Btn{NumBeDelete.ToString()}")).ToList().Count == 0)
+                    {
+                        MessageBox.Show($"We can't delete {NumBeDelete.ToString()}");
+                        return;
+                    }
+                    DeleteNodeInGridAsync(p, NumBeDelete);
+                });
+            }
+        }
         public AVLTree<int> Tree { get => tree; set => tree = value; }
 
 
@@ -114,19 +128,19 @@ namespace Wpf_AVL.ViewModel
         /// <param name="isRightLeaf"></param>
         /// <param name="name"></param>
         private void DrawLine(Grid grid, double x1, double x2, double y1, double y2, bool isRightLeaf, string name)
-        {       
-                    Line l = new Line
-                    {
-                        Stroke = new SolidColorBrush(Colors.Black),
-                        StrokeThickness = 2.0,
-                        Name = name,
-                        X1 = x1 + (isRightLeaf ? 50 : 0),
-                        X2 = x1 + (isRightLeaf ? 50 : 0), //x2 + (isRightLeaf ? 0 : 50),
-                            Y1 = y1 + 25, //btn1Point.Y + a.ActualHeight / 2;
-                            Y2 = y1 + 25
-                    };
-                    AnimationGrowLine(x2 + (isRightLeaf ? 0 : 50), y2 + 25, TimeSpan.FromSeconds(1), l);
-                    grid.Children.Add(l);
+        {
+            Line l = new Line
+            {
+                Stroke = new SolidColorBrush(Colors.Black),
+                StrokeThickness = 2.0,
+                Name = name,
+                X1 = x1 + (isRightLeaf ? 50 : 0),
+                X2 = x1 + (isRightLeaf ? 50 : 0), //x2 + (isRightLeaf ? 0 : 50),
+                Y1 = y1 + 25, //btn1Point.Y + a.ActualHeight / 2;
+                Y2 = y1 + 25
+            };
+            AnimationGrowLine(x2 + (isRightLeaf ? 0 : 50), y2 + 25, TimeSpan.FromSeconds(1), l);
+            grid.Children.Add(l);
         }
 
 
@@ -228,6 +242,7 @@ namespace Wpf_AVL.ViewModel
             else if (cmp > 0)
                 x.Right = FindAndRotation(x.Right, key, (p as Grid));
             x = Balance(x, (p as Grid));
+            
             return x;
         }
 
@@ -243,7 +258,7 @@ namespace Wpf_AVL.ViewModel
             {
                 if (CheckBalance(x.Right) > 0)
                 {
-                    (p as Grid).Children.Remove( (p as Grid).Children.OfType<Line>().FirstOrDefault(l=>Regex.Split( l.Name,"Btn")[2]==x.Right.Left.Data.ToString()));
+                    (p as Grid).Children.Remove((p as Grid).Children.OfType<Line>().FirstOrDefault(l => Regex.Split(l.Name, "Btn")[2] == x.Right.Left.Data.ToString()));
                     x.Right = RotateRight(x.Right, (p as Grid));
                 }
                 x = RotateLeft(x, (p as Grid));
@@ -256,7 +271,6 @@ namespace Wpf_AVL.ViewModel
                     x.Left = RotateLeft(x.Left, (p as Grid));
                 }
                 x = RotateRight(x, (p as Grid));
-
             }
             return x;
         }
@@ -279,7 +293,7 @@ namespace Wpf_AVL.ViewModel
             y.X = x.X;
             y.Y = x.Y;
             Node<int> father = null;//Tree.FindParent(y)?.Item1;
-            if (y.Left!=null)
+            if (y.Left != null)
             {
 
                 var colectionLine = (p as Grid).Children.OfType<Line>().ToArray();
@@ -314,7 +328,7 @@ namespace Wpf_AVL.ViewModel
 
             Node<int> father = null;//Tree.FindParent(y)?.Item1;
             var colectionLine = (p as Grid).Children.OfType<Line>().ToArray();
-            if (y.Right!=null)
+            if (y.Right != null)
             {
 
                 for (int i = 0; i < colectionLine.Length; i++)
@@ -325,7 +339,7 @@ namespace Wpf_AVL.ViewModel
                         colectionLine[i].Name = $"Btn{Regex.Split(colectionLine[i].Name, "Btn")[1]}Btn{y.Data}";
                         (p as Grid).Children.Add(colectionLine[i]);
                     }
-                    else if(y.Data.ToString() == Regex.Split(colectionLine[i].Name, "Btn")[2])
+                    else if (y.Data.ToString() == Regex.Split(colectionLine[i].Name, "Btn")[2])
                     {
 
                         (p as Grid).Children.Remove(colectionLine[i]);
@@ -373,12 +387,6 @@ namespace Wpf_AVL.ViewModel
             RelayoutAfterRotate(node.Right, p, node, true);
         }
         #endregion
-
-        async void InsertNodeTOGridAsync(UIElement p, Node<int> node)
-        {
-
-
-        }
 
         /// <summary>
         /// Add a node to Grid with location
@@ -594,7 +602,7 @@ namespace Wpf_AVL.ViewModel
                     if (nodeDe.Left != null && nodeDe.Right != null)
                     {
                         var successor = Tree.GetMin(nodeDe.Right);
-                        var nodeSucc = Tree.FindNode(nodeDe, successor);//new Node<int>((int)nodeDe.Successor()));
+                        var nodeSucc = Tree.FindNode(nodeDe, successor);
                         var buttonSucc = grid.Children.OfType<Button>().Where(s => s.Content.Equals(nodeSucc.Data.ToString())).FirstOrDefault();
                         AnimationButtonMovetTo(nodeDe.X, nodeDe.Y, buttonSucc);//to move a successor to new position (the button will be deleted)
                         Node<int> nodeDelPar = new Node<int>();
@@ -606,13 +614,16 @@ namespace Wpf_AVL.ViewModel
                         grid.Children.Remove(p.Result.Item2);
                         await Task.Factory.ContinueWhenAll(new Task[] { task, taskFindParent }, t =>
                         {
-
-                            Tree.Remove(new Node<int>(NumBeDelete));
+                            Application.Current.Dispatcher.Invoke(() => 
+                            {
+                                Tree.root = Remove(Tree.root, NumBeDelete, grid);
+                            });
+                            //Tree.Remove(new Node<int>(NumBeDelete));
                         });
                         grid.Children.OfType<Line>().Where(l => l.Name.Contains($"{"Btn" + nodeDelete.ToString()}")).ToList().ForEach((item) =>
-                                                {
-                                                    item.Name = item.Name.Replace($"{"Btn" + nodeDelete.ToString()}", $"{"Btn" + nodeSucc.Data.ToString()}");
-                                                });
+                        {
+                            item.Name = item.Name.Replace($"{"Btn" + nodeDelete.ToString()}", $"{"Btn" + nodeSucc.Data.ToString()}");
+                        });
 
                     }
                     else
@@ -623,18 +634,88 @@ namespace Wpf_AVL.ViewModel
                         });
                         await Task.Factory.ContinueWhenAll(new Task[] { task }, t =>
                         {
-
                             if (Tree.FindParent(new Node<int>(nodeDelete)).Item1 == null && nodeDe.Right == null && nodeDe.Left == null)
                             {
                                 Tree = null;
                             }
-                            Tree.Remove(new Node<int>(NumBeDelete));
-
+                            else
+                            {
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    Tree.root = Remove(Tree.root, NumBeDelete, grid);
+                                });
+                            }
                         }); grid.Children.Remove(p.Result.Item2);
                     }
                     //AnimationButtonMovetTo(20, 20, p.Result.Item2);
                 });
             });
+        }
+
+        /// <summary>
+        /// Remove a element with minimum value in AVL
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        private Node<int> RemoveMin(Node<int> x)
+        {
+            if (x.Left == null)
+                return x.Right;
+            x.Left = RemoveMin(x.Left);
+            return x;
+        }
+
+        /// <summary>
+        /// Remove a element in AVL -paramater is a object <seealso cref="Node{T}"/>
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        private Node<int> Remove(Node<int> x, int key, UIElement p)
+        {
+            if (x == null) return null;
+            int cmp = key.CompareTo(x.Data);
+            if (cmp < 0)
+                x.Left = Remove(x.Left, key,p);
+            else if (cmp > 0)
+                x.Right = Remove(x.Right, key,p);
+            else
+            {
+                if (x.Right == null)
+                    return x.Left;
+                if (x.Left == null)
+                    return x.Right;
+                Node<int> t = x;
+                x.Data = GetMin(t.Right).Data;
+                x.Right = RemoveMin(t.Right);
+                x.Left = t.Left;
+            }
+            x = Balance(x,p);
+            return x;
+        }
+
+        /// <summary>
+        ///Return a minimum value in node
+        /// </summary>
+        /// <returns></returns>
+        public Node<int> GetMin(Node<int> node)
+        {
+            var temp = node;
+            if (node == null)
+            {
+                return node;
+            }
+            while (true)
+            {
+                if (temp.Left == null)
+                {
+                    return temp;
+                }
+                else if (temp.Left != null)
+                {
+                    temp = temp.Left;
+                }
+            }
         }
 
         /// <summary>
