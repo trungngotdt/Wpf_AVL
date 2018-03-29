@@ -507,8 +507,12 @@ namespace Wpf_AVL.ViewModel
         /// <param name="button"></param>
         public void RoundButton(Button button)
         {
+            Style style = Application.Current.FindResource("MaterialDesignFloatingActionDarkButton") as Style;
+            button.Style = style;
+            button.ToolTip = button.Content;
+            /*
             ControlTemplate circleButtonTemplate = new ControlTemplate(typeof(Button));
-
+            
             // Create the circle
             FrameworkElementFactory circle = new FrameworkElementFactory(typeof(Ellipse));
             circle.SetValue(Ellipse.FillProperty, Brushes.LightGreen);
@@ -532,6 +536,7 @@ namespace Wpf_AVL.ViewModel
 
             // Set the ControlTemplate as the Button.Template
             button.Template = circleButtonTemplate;
+            */
         }
         #endregion
 

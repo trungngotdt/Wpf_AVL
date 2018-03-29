@@ -8,8 +8,16 @@
         mc:Ignorable="d ignore"
         WindowState="Maximized"
         Title="AVL"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+     TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+     TextElement.FontWeight="Regular"
+     TextElement.FontSize="13"
+     TextOptions.TextFormattingMode="Ideal"
+     TextOptions.TextRenderingMode="Auto"
+     Background="{DynamicResource MaterialDesignPaper}"
+     FontFamily="{DynamicResource MaterialDesignFont}"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
-    
+
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -31,7 +39,8 @@
                 <StackPanel>
                     <Button x:Name="BtnAddNode" 
                             Content="Add"
-                            Width="70"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Width="100"
                             Command="{Binding BtnAddNodeClickCommand}"
                             CommandParameter="{Binding ElementName=BSTGrid}">
                         <!--
@@ -43,39 +52,67 @@
                         </Button.CommandParameter>
                         -->
                     </Button>
-                    <TextBox x:Name="TxbNode"
-                             Width="70"
+                    <StackPanel Orientation="Horizontal">
+
+                        <materialDesign:PackIcon Margin="0,25,0,0"
+                                                 Width="25"
+                                                 Height="25"
+                                                 Kind="Plus"/>
+
+                        <TextBox x:Name="TxbNode"
                              Margin="0,25,0,0"
-                             Text="{Binding NodeAdd,Mode=OneWayToSource}"/>
+                             Text="{Binding NodeAdd}"/>
+                    </StackPanel>
+
                 </StackPanel>
             </Expander>
             <Expander Header="Find Node">
                 <StackPanel>
-                    <Button x:Name="BtnFindNode" 
-                                Content="Find"
-                                Width="70"
-                                Command="{Binding BtnFindNodeClickCommand}"
-                                CommandParameter="{Binding ElementName=BSTGrid}">
+                    <Button x:Name="BtnFindNode"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Width="100"
+                            Content="Find"
+                            Command="{Binding BtnFindNodeClickCommand}"
+                            CommandParameter="{Binding ElementName=BSTGrid}">
                     </Button>
-                    <TextBox x:Name="TxbFindNode"
-                         Width="70"
-                         Margin="0,25,0,0"
-                         Text="{Binding NodeFind,Mode=OneWayToSource}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock ></TextBlock>
+                        <materialDesign:PackIcon Width="25"
+                                                 Height="25"
+                                                 Kind="AccountSearch"></materialDesign:PackIcon>
+                        <TextBox x:Name="TxbFindNode"
+                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                 materialDesign:HintAssist.Hint="Number will find"
+                                 Text="{Binding NodeFind}">
+
+
+                        </TextBox>
+                    </StackPanel>
+
                 </StackPanel>
 
             </Expander>
             <Expander Header="Delete Node">
                 <StackPanel>
                     <Button x:Name="BtnDeleteNode" 
-                                Content="Delete"
-                                Width="70"
-                                Command="{Binding BtnDeleteNodeClickCommand}"
-                                CommandParameter="{Binding ElementName=BSTGrid}">
+                            Content="Delete"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Width="100"
+                            Command="{Binding BtnDeleteNodeClickCommand}"
+                            CommandParameter="{Binding ElementName=BSTGrid}">
                     </Button>
-                    <TextBox x:Name="TxbDeleteNode"
-                         Width="70"
-                         Margin="0,25,0,0"
-                         Text="{Binding NumBeDelete,Mode=OneWayToSource}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock ></TextBlock>
+                        <materialDesign:PackIcon Width="25"
+                                                 Height="25"
+                                                 Kind="WindowClose"/>
+
+                        <TextBox x:Name="TxbDeleteNode"
+                                 Width="70"
+                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                 materialDesign:HintAssist.Hint="Number will delete"
+                                 Text="{Binding NumBeDelete}"/>
+                    </StackPanel>
                 </StackPanel>
             </Expander>
         </StackPanel>

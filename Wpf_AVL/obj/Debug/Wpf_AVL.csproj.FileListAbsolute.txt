@@ -16,7 +16,6 @@ C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\bin\Debug\GalaSoft.MvvmLight.Platfor
 C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\bin\Debug\GalaSoft.MvvmLight.Platform.xml
 C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
 C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\bin\Debug\Microsoft.Practices.ServiceLocation.xml
-C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\obj\Debug\Wpf_AVL.csprojResolveAssemblyReference.cache
 C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\obj\Debug\MainWindow.baml
 C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\obj\Debug\Skins\MainSkin.baml
 C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\obj\Debug\MainWindow.g.cs
@@ -32,3 +31,8 @@ C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\obj\Debug\Wpf_AVL.csproj.CoreCompile
 C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\obj\Debug\Wpf_AVL.exe
 C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\obj\Debug\Wpf_AVL.pdb
 C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\obj\Debug\Wpf_AVL.csproj.CopyComplete
+C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\bin\Debug\MaterialDesignColors.dll
+C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\bin\Debug\MaterialDesignThemes.Wpf.dll
+C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\bin\Debug\MaterialDesignThemes.Wpf.pdb
+C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\bin\Debug\MaterialDesignThemes.Wpf.xml
+C:\Users\Admin\source\repos\Wpf_AVL\Wpf_AVL\obj\Debug\Wpf_AVL.csprojResolveAssemblyReference.cache
