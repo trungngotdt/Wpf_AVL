@@ -9,13 +9,13 @@
         WindowState="Maximized"
         Title="AVL"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-     TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-     TextElement.FontWeight="Regular"
-     TextElement.FontSize="13"
-     TextOptions.TextFormattingMode="Ideal"
-     TextOptions.TextRenderingMode="Auto"
-     Background="{DynamicResource MaterialDesignPaper}"
-     FontFamily="{DynamicResource MaterialDesignFont}"
+         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+         TextElement.FontWeight="Regular"
+         TextElement.FontSize="13"
+         TextOptions.TextFormattingMode="Ideal"
+         TextOptions.TextRenderingMode="Auto"
+         Background="{DynamicResource MaterialDesignPaper}"
+         FontFamily="{DynamicResource MaterialDesignFont}"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
 
     <Window.Resources>
@@ -26,99 +26,160 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid x:Name="LayoutRoot">
+    <Grid x:Name="LayoutRoot" >
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="5*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel x:Name="MenuStack" Grid.Column="0" Background="Azure">
+        <materialDesign:ColorZone VerticalAlignment="Stretch"
+            Mode="Dark">
+            <Grid x:Name="MenuGrid" Grid.Column="0" >
+                <materialDesign:ColorZone Mode="Accent">
+                    <Expander ExpandDirection="Right" Background="Orange"
+                               Grid.Column="0">
+                        <Expander.Header>
+                            <TextBlock Text="Menu"
+                                       RenderTransformOrigin=".5,.5">
+                                <TextBlock.LayoutTransform>
+                                    <RotateTransform Angle="90" />
+                                </TextBlock.LayoutTransform>
+                            </TextBlock>
+                        </Expander.Header>
+                        <StackPanel Orientation="Vertical">
 
+                            <Expander Header="Add Node" 
+                                      Grid.Column="0" 
+                                      VerticalAlignment="Stretch">
+                                <StackPanel>
+                                    <Button x:Name="BtnAddNode" 
+                                            Content="Add"
+                                            Style="{StaticResource MaterialDesignRaisedButton}"
+                                            Width="100"
+                                            Command="{Binding BtnAddNodeClickCommand}"
+                                            CommandParameter="{Binding ElementName=BSTGrid}">
 
-            <Expander Header="Add Node" Grid.Column="0">
-                <StackPanel>
-                    <Button x:Name="BtnAddNode" 
-                            Content="Add"
-                            Style="{StaticResource MaterialDesignRaisedButton}"
-                            Width="100"
-                            Command="{Binding BtnAddNodeClickCommand}"
-                            CommandParameter="{Binding ElementName=BSTGrid}">
-                        <!--
-                        <Button.CommandParameter>
-                            <MultiBinding Converter="{StaticResource ConverBtnAddNode}">
-                                <Binding ElementName="LayoutRoot" />
-                                <Binding ElementName="BSTGrid" />
-                            </MultiBinding>
-                        </Button.CommandParameter>
-                        -->
-                    </Button>
-                    <StackPanel Orientation="Horizontal">
+                                    </Button>
+                                    <StackPanel Orientation="Vertical"
+                                                x:Name="StackAddMenu">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBox x:Name="TxbNodeAdd"
+                                                     Width="125"
+                                                     Text="{Binding NodeAdd}"
+                                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                     materialDesign:HintAssist.Hint="ID"
+                                                     Margin="0,25,0,0"/>
+                                        </StackPanel>
+                                        <!--
+                                         <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Width="25"
+                                                                     Kind="Account"
+                                                                     Margin="{Binding ElementName=TxbID,Path=Margin}"
+                                                                     Height="25"/>
+                                            <TextBox x:Name="TxbID"
+                                                     Width="125"
+                                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                     materialDesign:HintAssist.Hint="ID"
+                                                     Margin="0,25,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                        
+                                        <TextBox x:Name="TxbName"
+                                                 materialDesign:HintAssist.Hint="Name"
+                                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                 Margin="0,10,0,0"
+                                                 Width="175"
+                                                 Text="{Binding Name}"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                                <TextBox x:Name="TxbBirth"
+                                                         materialDesign:HintAssist.Hint="Birth"
+                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                         Margin="{Binding ElementName=TxbName,Path=Margin}"
+                                                         Width="{Binding ElementName=TxbName,Path=Width}"
+                                                         Text="{Binding BirthDay}"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBox x:Name="TxbAccumulationCredit"
+                                                     materialDesign:HintAssist.Hint="AccumulationCredit"
+                                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                     Margin="{Binding ElementName=TxbName,Path=Margin}"
+                                                     Width="{Binding ElementName=TxbName,Path=Width}"
+                                                     Text="{Binding AccumulationCredit}"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBox x:Name="TxbAvgMark"
+                                                     materialDesign:HintAssist.Hint="AvgMark"
+                                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                     Margin="{Binding ElementName=TxbName,Path=Margin}"
+                                                     Width="{Binding ElementName=TxbName,Path=Width}"
+                                                     Text="{Binding AvgMark}"/>
+                                        </StackPanel>
+                                        -->
+                                       
+                                       
+                                    </StackPanel>
 
-                        <materialDesign:PackIcon Margin="0,25,0,0"
-                                                 Width="25"
-                                                 Height="25"
-                                                 Kind="Plus"/>
-
-                        <TextBox x:Name="TxbNode"
-                             Margin="0,25,0,0"
-                             Text="{Binding NodeAdd}"/>
-                    </StackPanel>
-
-                </StackPanel>
-            </Expander>
-            <Expander Header="Find Node">
-                <StackPanel>
-                    <Button x:Name="BtnFindNode"
-                            Style="{StaticResource MaterialDesignRaisedButton}"
-                            Width="100"
-                            Content="Find"
-                            Command="{Binding BtnFindNodeClickCommand}"
-                            CommandParameter="{Binding ElementName=BSTGrid}">
-                    </Button>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock ></TextBlock>
-                        <materialDesign:PackIcon Width="25"
+                                </StackPanel>
+                            </Expander>
+                            <Expander Header="Find Node">
+                                <StackPanel>
+                                    <Button x:Name="BtnFindNode"
+                                            Style="{StaticResource MaterialDesignRaisedButton}"
+                                            Width="100"
+                                            Content="Find"
+                                            Command="{Binding BtnFindNodeClickCommand}"
+                                            CommandParameter="{Binding ElementName=BSTGrid}">
+                                    </Button>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock ></TextBlock>
+                                        <materialDesign:PackIcon Width="25"
                                                  Height="25"
                                                  Kind="AccountSearch"></materialDesign:PackIcon>
-                        <TextBox x:Name="TxbFindNode"
-                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                 materialDesign:HintAssist.Hint="Number will find"
-                                 Text="{Binding NodeFind}">
+                                        <TextBox x:Name="TxbFindNode"
+                                                 Width="{Binding ElementName=TxbNodeAdd,Path=Width}"
+                                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                 materialDesign:HintAssist.Hint="Number will find"
+                                                 Text="{Binding NodeFind}">
+                                        </TextBox>
+                                    </StackPanel>
 
+                                </StackPanel>
 
-                        </TextBox>
-                    </StackPanel>
-
-                </StackPanel>
-
-            </Expander>
-            <Expander Header="Delete Node">
-                <StackPanel>
-                    <Button x:Name="BtnDeleteNode" 
-                            Content="Delete"
-                            Style="{StaticResource MaterialDesignRaisedButton}"
-                            Width="100"
-                            Command="{Binding BtnDeleteNodeClickCommand}"
-                            CommandParameter="{Binding ElementName=BSTGrid}">
-                    </Button>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock ></TextBlock>
-                        <materialDesign:PackIcon Width="25"
+                            </Expander>
+                            <Expander Header="Delete Node">
+                                <StackPanel>
+                                    <Button x:Name="BtnDeleteNode" 
+                                            Content="Delete"
+                                            Style="{StaticResource MaterialDesignRaisedButton}"
+                                            Width="100"
+                                            Command="{Binding BtnDeleteNodeClickCommand}"
+                                            CommandParameter="{Binding ElementName=BSTGrid}">
+                                    </Button>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock ></TextBlock>
+                                        <materialDesign:PackIcon Width="25"
                                                  Height="25"
                                                  Kind="WindowClose"/>
 
-                        <TextBox x:Name="TxbDeleteNode"
-                                 Width="70"
-                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                 materialDesign:HintAssist.Hint="Number will delete"
-                                 Text="{Binding NumBeDelete}"/>
-                    </StackPanel>
-                </StackPanel>
-            </Expander>
-        </StackPanel>
+                                        <TextBox x:Name="TxbDeleteNode"
+                                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                 materialDesign:HintAssist.Hint="Number will delete"
+                                                 Text="{Binding NumBeDelete}"/>
+                                        </StackPanel>
+                                </StackPanel>
+                            </Expander>
+                        </StackPanel>
+                    </Expander>
+                </materialDesign:ColorZone>
+
+
+            </Grid>
+        </materialDesign:ColorZone>
+
         <ScrollViewer Grid.Column="1"
-                      HorizontalScrollBarVisibility="Auto"
-                      VerticalScrollBarVisibility="Auto">
+                      HorizontalScrollBarVisibility="Visible"
+                      VerticalScrollBarVisibility="Visible">
 
             <Grid x:Name="BSTGrid"
                   Grid.Column="1"

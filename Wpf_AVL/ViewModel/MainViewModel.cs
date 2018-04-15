@@ -37,6 +37,11 @@ namespace Wpf_AVL.ViewModel
         private int numFind;
         private int nodeDelete;
         private AVLTree<int> tree;
+        private int id;
+        private string name;
+        private float avgMark;
+        private int accumulationCredit;
+        private DateTime birthDay;
 
 
         private readonly int VerticalMarging = 100;
@@ -61,12 +66,21 @@ namespace Wpf_AVL.ViewModel
                 Set(ref _welcomeTitle, value);
             }
         }
+        /*
+        public int Id { get => id; set => id = value; }
+        public string Name { get => name; set => name = value; }
+        public float AvgMark { get => avgMark; set => avgMark = value; }
+        public int AccumulationCredit { get => accumulationCredit; set => accumulationCredit = value; }
+        public DateTime BirthDay { get => birthDay; set => birthDay = value; }
+        */
 
         public int NumBeDelete { get => nodeDelete; set => nodeDelete = value; }
         public int NodeAdd { get => numFind; set => numFind = value; }
         public int NodeFind { get => nodeAdd; set => nodeAdd = value; }
         public double WidthGridBST { get => widthGridBST; set => widthGridBST = value; }
         public double HeightGridBST { get => heightGridBST; set => heightGridBST = value; }
+        public AVLTree<int> Tree { get => tree; set => tree = value; }
+
         public ICommand BtnAddNodeClickCommand
         {
             get
@@ -98,7 +112,7 @@ namespace Wpf_AVL.ViewModel
                 });
             }
         }
-        public AVLTree<int> Tree { get => tree; set => tree = value; }
+        
 
 
         /// <summary>
@@ -113,6 +127,166 @@ namespace Wpf_AVL.ViewModel
         }
 
 
+        #region Balance
+        /// <summary>
+        /// Keeping tree's balance
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        private async Task<Node<int>> BalanceAsync(Node<int> x, UIElement p)
+        {
+            if (CheckBalance(x) < -1)
+            {
+                if (CheckBalance(x.Right) > 0)
+                {
+                    (p as Grid).Children.Remove((p as Grid).Children.OfType<Line>().FirstOrDefault(l => Regex.Split(l.Name, "Btn")[2] == x.Right.Left.Data.ToString()));
+                    x.Right = await RotateRightAsync(x.Right, (p as Grid));
+                }
+                x = await RotateLeftAsync(x, (p as Grid));
+            }
+            else if (CheckBalance(x) > 1)
+            {
+                if (CheckBalance(x.Left) < 0)
+                {
+                    (p as Grid).Children.Remove((p as Grid).Children.OfType<Line>().FirstOrDefault(l => Regex.Split(l.Name, "Btn")[2] == x.Left.Right.Data.ToString()));
+                    x.Left = await RotateLeftAsync(x.Left, (p as Grid));
+                }
+                x = await RotateRightAsync(x, (p as Grid));
+            }
+            return x;
+        }
+
+        /// <summary>
+        /// Checking the tree is balance or nor
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        private int CheckBalance(Node<int> x)
+        {
+            return Tree.Height(x.Left) - Tree.Height(x.Right);
+        }
+
+        private async Task<Node<int>> RotateLeftAsync(Node<int> x, UIElement p)
+        {
+            Node<int> y = x.Right;
+            x.Right = y.Left;
+            y.Left = x;
+            y.X = x.X;
+            y.Y = x.Y;
+            Node<int> father = Tree.FindParent(x)?.Item1;
+            if (y.Left != null)
+            {
+
+                var colectionLine = (p as Grid).Children.OfType<Line>().ToArray();
+                for (int i = 0; i < colectionLine.Length; i++)
+                {
+
+                    if (y.Left.Data.ToString() == Regex.Split(colectionLine[i].Name, "Btn")[2])
+                    {
+                        (p as Grid).Children.Remove(colectionLine[i]);
+                        colectionLine[i].Name = $"Btn{Regex.Split(colectionLine[i].Name, "Btn")[1]}Btn{y.Data}";
+                        (p as Grid).Children.Add(colectionLine[i]);
+                    }
+                    else if (y.Data.ToString() == Regex.Split(colectionLine[i].Name, "Btn")[2])
+                    {
+                        (p as Grid).Children.Remove(colectionLine[i]);
+                    }
+                }
+            }
+            await RelayoutAfterRotateAsync(y, p, father);
+            return y;
+
+        }
+
+        private async Task<Node<int>> RotateRightAsync(Node<int> x, UIElement p)
+        {
+            Node<int> y = x.Left;
+            x.Left = y.Right;
+            y.Right = x;
+            y.X = x.X;
+            y.Y = x.Y;
+
+            Node<int> father = Tree.FindParent(x)?.Item1;
+            var colectionLine = (p as Grid).Children.OfType<Line>().ToArray();
+            if (y.Right != null)
+            {
+                for (int i = 0; i < colectionLine.Length; i++)
+                {
+                    if (y.Right.Data.ToString() == Regex.Split(colectionLine[i].Name, "Btn")[2])
+                    {
+                        (p as Grid).Children.Remove(colectionLine[i]);
+                        colectionLine[i].Name = $"Btn{Regex.Split(colectionLine[i].Name, "Btn")[1]}Btn{y.Data}";
+                        (p as Grid).Children.Add(colectionLine[i]);
+                    }
+                    else if (y.Data.ToString() == Regex.Split(colectionLine[i].Name, "Btn")[2])
+                    {
+                        (p as Grid).Children.Remove(colectionLine[i]);
+                    }
+                }
+            }
+            await RelayoutAfterRotateAsync(y, p, father);
+            return y;
+
+        }
+
+        private async Task RelayoutAfterRotateAsync(Node<int> node, UIElement p, Node<int> father = null, bool isRight = false)
+        {
+            if (node == null)
+            {
+                return;
+            }
+            if (node.Left != null)
+            {
+                node.Left.Y = node.Y + VerticalMarging;
+                node.Left.X = node.X - (p as Grid).ActualWidth / Math.Pow(2, ((node.Y + VerticalMarging) / VerticalMarging));
+            }
+            if (node.Right != null)
+            {
+                node.Right.Y = node.Y + VerticalMarging;
+                node.Right.X = node.X + (p as Grid).ActualWidth / Math.Pow(2, ((node.Y + VerticalMarging) / VerticalMarging));
+            }
+            if (father != null)
+            {
+                var colectionLine = (p as Grid).Children.OfType<Line>().ToArray();
+                List<Task> list = new List<Task>();
+                for (int i = 0; i < colectionLine.Length; i++)
+                {
+                    int j = i;
+                    var task = Task.Factory.StartNew(() =>
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            if (node.Data.ToString() == Regex.Split(colectionLine[j].Name, "Btn")[2])
+                            {
+                                (p as Grid).Children.Remove(colectionLine[j]);
+                                //break;
+                            }
+                        });
+                    });
+                    list.Add(task);
+                }
+                await Task.WhenAll(list);
+                //(p as Grid).Children.Remove(FindLineInGrid(p as Grid, $"Btn{father.Data}Btn{node.Data}"));
+                DrawLine(p as Grid, father.X, node.X, father.Y, node.Y, isRight, $"Btn{father.Data}Btn{node.Data}");
+            }
+            AnimationButtonMovetTo(node.X, node.Y, (p as Grid).Children.OfType<Button>().Where(b => b.Name == $"Btn{node.Data}").FirstOrDefault());
+            Task taskLeft = Task.Factory.StartNew(() =>
+            {
+                Application.Current.Dispatcher.Invoke(async () =>
+                {
+                    await RelayoutAfterRotateAsync(node.Left, p, node);
+                });
+            });
+            Task taskRight = Task.Factory.StartNew(() =>
+            {
+                Application.Current.Dispatcher.Invoke(async () =>
+                {
+                    await RelayoutAfterRotateAsync(node.Right, p, node, true);
+                });
+            });
+            await Task.WhenAll(new Task[] { taskLeft, taskRight });
+        }
+        #endregion
         #region Add a node to grid
 
         #region Draw line
@@ -134,12 +308,12 @@ namespace Wpf_AVL.ViewModel
                 Stroke = new SolidColorBrush(Colors.Black),
                 StrokeThickness = 2.0,
                 Name = name,
-                X1 = x1 + (isRightLeaf ? 50 : 0),
-                X2 = x1 + (isRightLeaf ? 50 : 0), //x2 + (isRightLeaf ? 0 : 50),
-                Y1 = y1 + 25, //btn1Point.Y + a.ActualHeight / 2;
-                Y2 = y1 + 25
+                X1 = x1 + (isRightLeaf ? 25 : 25),
+                X2 = x1 + (isRightLeaf ? 25 : 25), //x2 + (isRightLeaf ? 0 : 50),
+                Y1 = y1 + 50, //btn1Point.Y + a.ActualHeight / 2;
+                Y2 = y1 + 50
             };
-            AnimationGrowLine(x2 + (isRightLeaf ? 0 : 50), y2 + 25, TimeSpan.FromSeconds(1), l);
+            AnimationGrowLine(x2 + (isRightLeaf ? 25 : 25), y2 /*+ 25*/, TimeSpan.FromSeconds(1), l);
             grid.Children.Add(l);
         }
 
@@ -240,166 +414,6 @@ namespace Wpf_AVL.ViewModel
             return x;
         }
 
-        #region Balance
-        /// <summary>
-        /// Keeping tree's balance
-        /// </summary>
-        /// <param name="x"></param>
-        /// <returns></returns>
-        private async Task<Node<int>> BalanceAsync(Node<int> x, UIElement p)
-        {
-            if (CheckBalance(x) < -1)
-            {
-                if (CheckBalance(x.Right) > 0)
-                {
-                    (p as Grid).Children.Remove((p as Grid).Children.OfType<Line>().FirstOrDefault(l => Regex.Split(l.Name, "Btn")[2] == x.Right.Left.Data.ToString()));
-                    x.Right = await RotateRightAsync(x.Right, (p as Grid));
-                }
-                x = await RotateLeftAsync(x, (p as Grid));
-            }
-            else if (CheckBalance(x) > 1)
-            {
-                if (CheckBalance(x.Left) < 0)
-                {
-                    (p as Grid).Children.Remove((p as Grid).Children.OfType<Line>().FirstOrDefault(l => Regex.Split(l.Name, "Btn")[2] == x.Left.Right.Data.ToString()));
-                    x.Left = await RotateLeftAsync(x.Left, (p as Grid));
-                }
-                x = await RotateRightAsync(x, (p as Grid));
-            }
-            return x;
-        }
-
-        /// <summary>
-        /// Checking the tree is balance or nor
-        /// </summary>
-        /// <param name="x"></param>
-        /// <returns></returns>
-        private int CheckBalance(Node<int> x)
-        {
-            return Tree.Height(x.Left) - Tree.Height(x.Right);
-        }
-
-        private async Task<Node<int>> RotateLeftAsync(Node<int> x, UIElement p)
-        {
-            Node<int> y = x.Right;
-            x.Right = y.Left;
-            y.Left = x;
-            y.X = x.X;
-            y.Y = x.Y;
-            Node<int> father = null;//Tree.FindParent(y)?.Item1;
-            if (y.Left != null)
-            {
-
-                var colectionLine = (p as Grid).Children.OfType<Line>().ToArray();
-                for (int i = 0; i < colectionLine.Length; i++)
-                {
-
-                    if (y.Left.Data.ToString() == Regex.Split(colectionLine[i].Name, "Btn")[2])
-                    {
-                        (p as Grid).Children.Remove(colectionLine[i]);
-                        colectionLine[i].Name = $"Btn{Regex.Split(colectionLine[i].Name, "Btn")[1]}Btn{y.Data}";
-                        (p as Grid).Children.Add(colectionLine[i]);
-                    }
-                    else if (y.Data.ToString() == Regex.Split(colectionLine[i].Name, "Btn")[2])
-                    {
-                        (p as Grid).Children.Remove(colectionLine[i]);
-                    }
-                }
-            }
-            await RelayoutAfterRotateAsync(y, p, father);
-            return y;
-
-        }
-
-        private async Task<Node<int>> RotateRightAsync(Node<int> x, UIElement p)
-        {
-            Node<int> y = x.Left;
-            x.Left = y.Right;
-            y.Right = x;
-            y.X = x.X;
-            y.Y = x.Y;
-
-            Node<int> father = null;//Tree.FindParent(y)?.Item1;
-            var colectionLine = (p as Grid).Children.OfType<Line>().ToArray();
-            if (y.Right != null)
-            {
-                for (int i = 0; i < colectionLine.Length; i++)
-                {
-                    if (y.Right.Data.ToString() == Regex.Split(colectionLine[i].Name, "Btn")[2])
-                    {
-                        (p as Grid).Children.Remove(colectionLine[i]);
-                        colectionLine[i].Name = $"Btn{Regex.Split(colectionLine[i].Name, "Btn")[1]}Btn{y.Data}";
-                        (p as Grid).Children.Add(colectionLine[i]);
-                    }
-                    else if (y.Data.ToString() == Regex.Split(colectionLine[i].Name, "Btn")[2])
-                    {
-                        (p as Grid).Children.Remove(colectionLine[i]);
-                    }
-                }
-            }
-            await RelayoutAfterRotateAsync(y, p, father);
-            return y;
-
-        }
-
-        private async Task RelayoutAfterRotateAsync(Node<int> node, UIElement p, Node<int> father = null, bool isRight = false)
-        {
-            if (node == null)
-            {
-                return;
-            }
-            if (node.Left != null)
-            {
-                node.Left.Y = node.Y + VerticalMarging;
-                node.Left.X = node.X - (p as Grid).ActualWidth / Math.Pow(2, ((node.Y + VerticalMarging) / VerticalMarging));
-            }
-            if (node.Right != null)
-            {
-                node.Right.Y = node.Y + VerticalMarging;
-                node.Right.X = node.X + (p as Grid).ActualWidth / Math.Pow(2, ((node.Y + VerticalMarging) / VerticalMarging));
-            }
-            if (father != null)
-            {
-                var colectionLine = (p as Grid).Children.OfType<Line>().ToArray();
-                List<Task> list = new List<Task>();
-                for (int i = 0; i < colectionLine.Length; i++)
-                {
-                    int j = i;
-                    var task = Task.Factory.StartNew(() =>
-                    {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            if (node.Data.ToString() == Regex.Split(colectionLine[j].Name, "Btn")[2])
-                            {
-                                (p as Grid).Children.Remove(colectionLine[j]);
-                                //break;
-                            }
-                        });
-                    });
-                    list.Add(task);
-                }
-                await Task.WhenAll(list);
-                //(p as Grid).Children.Remove(FindLineInGrid(p as Grid, $"Btn{father.Data}Btn{node.Data}"));
-                DrawLine(p as Grid, father.X, node.X, father.Y, node.Y, isRight, $"Btn{father.Data}Btn{node.Data}");
-            }
-            AnimationButtonMovetTo(node.X, node.Y, (p as Grid).Children.OfType<Button>().Where(b => b.Name == $"Btn{node.Data}").FirstOrDefault());
-            Task taskLeft = Task.Factory.StartNew(() =>
-            {
-                Application.Current.Dispatcher.Invoke(async () =>
-                {
-                    await RelayoutAfterRotateAsync(node.Left, p, node);
-                });
-            });
-            Task taskRight = Task.Factory.StartNew(() =>
-            {
-                Application.Current.Dispatcher.Invoke(async () =>
-                {
-                    await RelayoutAfterRotateAsync(node.Right, p, node, true);
-                });
-            });
-            await Task.WhenAll(new Task[] { taskLeft, taskRight });
-        }
-        #endregion
 
         /// <summary>
         /// Add a node to Grid with location
@@ -462,25 +476,21 @@ namespace Wpf_AVL.ViewModel
                          var X2 = p.X2;
                          var Y2 = p.Y2;
                          var name = p.Name;//Type : Btn'firstnum'Btn'lastnum',Example :Btn1Btn2
-                                           //var firstn = name.IndexOf("n");
-                                           //var lastn = name.LastIndexOf("n");
-                                           //var firstb = name.LastIndexOf("B");
-                                  var number1 = Regex.Split(name, "Btn")[1]; //name.Substring(firstn + 1, firstb - firstn - 1);//Get first number
-                                                                             //var numStr = name.Length - lastn - 1;
-                                  var number2 = Regex.Split(name, "Btn")[2];//name.Substring(lastn + 1, numStr);//Get last number
-                                  p.BeginAnimation(Line.X2Property, null);//Animation be removed
-                                  if (int.Parse(number2) > int.Parse(number1))//Right
-                                  {
-                             p.X1 = p.X1 * 2 - 50;
-                             p.X2 = X2 * 2;
+                         var number1 = Regex.Split(name, "Btn")[1];//Get first number 
+                         var number2 = Regex.Split(name, "Btn")[2];//Get last number
+                         p.BeginAnimation(Line.X2Property, null);//Animation be removed
+                         if (int.Parse(number2) > int.Parse(number1))//Right
+                         {
+                             p.X1 = p.X1 * 2 - 25;//- 50;
+                             p.X2 = X2 * 2 - 25;
                          }
                          else//Left
-                                  {
-                             p.X2 = X2 * 2 - 50;
-                             p.X1 = p.X1 * 2;
+                         {
+                             p.X2 = X2 * 2 - 25;//- 50;
+                             p.X1 = p.X1 * 2 - 25;
                          }
                          p.BeginAnimation(Line.Y2Property, null);//Animation be removed
-                                  p.Y2 = Y2;
+                         p.Y2 = Y2;
                      });
                  });
                 listTask.Add(task2);
